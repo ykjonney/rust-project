@@ -1,0 +1,3 @@
+[workspace]
+
+members = ["async-io","hello_macro","minigrep","algorithm"]

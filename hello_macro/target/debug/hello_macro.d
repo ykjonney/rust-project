@@ -1,0 +1,1 @@
+C:\Users\admin\Desktop\rust-project\hello_macro\target\debug\hello_macro.exe: C:\Users\admin\Desktop\rust-project\hello_macro\hello_macro_derive\src\builder.rs C:\Users\admin\Desktop\rust-project\hello_macro\hello_macro_derive\src\lib.rs C:\Users\admin\Desktop\rust-project\hello_macro\src\lib.rs C:\Users\admin\Desktop\rust-project\hello_macro\src\main.rs
