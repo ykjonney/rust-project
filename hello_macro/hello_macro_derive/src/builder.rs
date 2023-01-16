@@ -123,5 +123,5 @@ fn get_option_inner(ty: &Type) -> (bool, &Type) {
             }
         }
     }
-    return (false, ty);
+    (false, ty)
 }
