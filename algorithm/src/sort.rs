@@ -133,12 +133,40 @@ fn partition(arr:&mut Vec<i32>,low:usize,high:usize)->(usize,usize){
 
 }
 
+fn heap_sort(arr:&mut Vec<i32>){
+    let mut heap_size = arr.len()-1;
+    if arr.len()<2{return;}
+    for i in 1..arr.len()  { //O(n)
+        heap_insert(arr, i); // o(logn)
+    }
+    
+    arr.swap(0,heap_size);
+    println!("{:?}",arr);
+    while heap_size>0 {
+        heapify(arr, 0, heap_size);
+        heap_size -=1;
+        arr.swap(0,heap_size);
+        println!("{:?},{heap_size}",arr);
+    }
+    // println!("{heap_size}");
+}
+
+//某个数处在i位置，往上继续移动
+fn heap_insert(arr: &mut Vec<i32>,i: usize){
+    let mut index = i;
+    while arr[index]>arr[((index as isize-1)/2)as usize] {
+        arr.swap(index,(index-1)/2);
+        index = (index-1)/2
+    }
+}
+
 fn heapify(arr: &mut Vec<i32>,i:usize,heap_size:usize){
     let mut left = i*2+1; //左孩子下标
     let mut parent = i; //当前下标
     while left < heap_size {
         //比较左右孩子求出最大者下标
-        let mut largest = if left +1 < heap_size&&arr[left] > arr[left+1] {left} else{left+1} ;
+        let mut largest = if left +1 < heap_size&&arr[left] < arr[left+1] {left+1} else{left} ;
+        println!("{left},{largest},{heap_size}");
         // 将最大者和父亲节点比较求出最大者下标
         largest = if arr[parent]> arr[largest]{parent} else{largest};
         //如果是父亲节点自己就结束
@@ -146,7 +174,8 @@ fn heapify(arr: &mut Vec<i32>,i:usize,heap_size:usize){
             break;
         }
         // 反之，交换两者
-        swap(arr, parent, largest);
+        arr.swap(parent,largest);
+        println!("heapify:{parent},{largest},{:?}",arr);
         // 当前节点更换
         parent = largest;
         left = parent * 2+1;
@@ -193,5 +222,12 @@ mod tests {
         let mut s = vec![3, 2, 1, 5, 9, 7];
         quick_sort(&mut s);
         assert_eq!(s,vec![1, 2, 3, 5, 7, 9]);
+    }
+
+    #[test]
+    fn test_heap_sort(){
+        let mut s = vec![3, 2, 1, 5, 9, 7,4];
+        heap_sort(&mut s);
+        assert_eq!(s,vec![1, 2, 3,4, 5, 7, 9]);
     }
 }
