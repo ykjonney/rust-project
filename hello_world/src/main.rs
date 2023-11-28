@@ -82,7 +82,7 @@ println!("finished iterating");
     let cflag = flag.clone();
     let ccond = cond.clone();
     let hand = thread::spawn(move||{
-        let mut m = {*cflag.lock().unwrap()};
+        let mut m: bool = {*cflag.lock().unwrap()};
         let mut counter = 0;
         while counter <3 {
             while !m {

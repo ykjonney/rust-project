@@ -1,5 +1,4 @@
 
-
 // 冒泡排序
 fn bubble_sort(s: &mut Vec<i32>) {
     if s.len() < 2 {
