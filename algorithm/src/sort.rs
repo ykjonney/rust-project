@@ -184,6 +184,60 @@ fn heapify(arr: &mut Vec<i32>,i:usize,heap_size:usize){
 
 }
 
+//基数排序
+fn radix(arr: &mut Vec<usize>){
+    //计算位数
+    let digist = get_radix(arr);
+   //有多少数准备多大空间
+   let mut bucket = vec![0;arr.len()];
+   for d in 1..digist+1{
+        let mut count = vec![0;10];//计算各个位上的数出现的次数
+        for i in 0..arr.len(){
+            let index = get_digist(arr[i],d);
+            count[index] += 1;
+        }
+        //计算前缀和
+        for i in 1..count.len(){
+            count[i] += count[i-1];
+        }
+        //取出数据
+        for i in (0..arr.len()).rev(){
+            //获取当前数据arr[i]在d位的数字
+            let index = get_digist(arr[i], d);
+            //将数据arr[i]分配到bucket的对应位置
+            bucket[count[index]-1] = arr[i];
+            //将count对应索引为index的count数减去1
+            count[index] -=1;
+        }
+        //将bucket数据给arr
+       for i in 0..bucket.len(){
+           arr[i] = bucket[i];
+       }    
+   }
+}
+
+use std::usize;
+fn get_digist(num:usize,d:usize)->usize{
+    return num /usize::pow(10,(d-1)as u32)%10
+}
+
+//找出数组中数的最大位数
+fn get_radix(arr: &Vec<usize>)->usize{
+    let mut max = 0;
+    for i in 0..arr.len(){
+        let mut d =0;
+        let mut num = arr[i];
+        while num !=0 {
+            num /= 10;
+            d += 1;
+        }
+        if d>max{
+            max = d;
+        }
+    }
+    return max;
+}
+
 
 //异或运算 c= a^b a= c^b, b=c^a  0=c^c
 fn swap(s: &mut Vec<i32>, i: usize, j: usize) {
@@ -228,6 +282,12 @@ mod tests {
     fn test_heap_sort(){
         let mut s = vec![3, 2, 1, 5, 9, 7,4];
         heap_sort(&mut s);
+        assert_eq!(s,vec![1, 2, 3,4, 5, 7, 9]);
+    }
+    #[test]
+    fn test_radix_sort(){
+        let mut s = vec![3, 2, 1, 5, 9, 7,4];
+        radix(&mut s);
         assert_eq!(s,vec![1, 2, 3,4, 5, 7, 9]);
     }
 }

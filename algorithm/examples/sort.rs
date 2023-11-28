@@ -33,7 +33,7 @@ fn merge(s:&mut Vec<i32>,l:usize,mid:usize,r:usize)->usize{
             help.push(s[p1]);
             p1+=1;
         }else{
-            res +=0;
+            // res +=0;
             help.push(s[p2]);
             p2+=1;
         }
