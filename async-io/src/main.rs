@@ -1,5 +1,6 @@
-#![feature(once_cell)]
-use std::{lazy::SyncOnceCell, thread};
+// #![feature(once_cell)]
+use std::{sync::OnceLock,thread};
+
 fn main() {
     // let b = Box::new(10);
     // let prt = Box::into_raw(b);
@@ -13,12 +14,12 @@ fn main() {
     let logger = Logger::global();
     logger.log("main thread message".to_string());
     handle.join().unwrap();
-    let s = vec![104, 101, 108, 108, 111];
+    
 }
 
 #[derive(Debug)]
 struct Logger;
-static LOGGER: SyncOnceCell<Logger> = SyncOnceCell::new();
+static LOGGER: OnceLock<Logger> = OnceLock::new();
 
 impl Logger {
     fn global() -> &'static Logger {

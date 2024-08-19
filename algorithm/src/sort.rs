@@ -1,5 +1,6 @@
 
 // 冒泡排序
+#[allow(dead_code)]
 fn bubble_sort(s: &mut Vec<i32>) {
     if s.len() < 2 {
         return;
@@ -14,6 +15,7 @@ fn bubble_sort(s: &mut Vec<i32>) {
     }
 }
 //选择排序 选择最小的
+#[allow(dead_code)]
 fn select_sort(s: &mut Vec<i32>) {
     if s.len() < 2 {
         return;
