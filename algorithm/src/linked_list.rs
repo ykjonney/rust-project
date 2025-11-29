@@ -1,20 +1,33 @@
+// 链表实现集合
+// 演示在 Rust 中使用引用计数（Rc）与内部可变性（RefCell）实现链表
+// 支持链表基本操作：创建、插入、删除、环检测
+
 use std::cell::RefCell;
 use std::fmt::{ Debug};
 use std::rc::Rc;
 
-
+/// 链表节点类型：使用 Option<Rc<RefCell<Node<T>>>> 表示可空的、引用计数的、可变的节点
 type Link<T> = Option<Rc<RefCell<Node<T>>>>;
+
+/// 单链表节点
 #[derive(PartialEq, Eq, Clone, Debug)]
 struct Node<T:PartialEq> {
+    /// 节点数据
     elem: T,
+    /// 指向下一个节点的指针
     next: Link<T>,
 }
+
+/// 单链表结构
 #[derive(Debug)]
 struct List<T:PartialEq> {
+    /// 头指针
     head: Link<T>,
+    /// 尾指针（用于快速追加）
     tail: Link<T>,
 }
 impl<T:PartialEq+Debug>List<T> {
+    /// 创建空链表
     fn new() -> Self {
         List {
             head: None,
@@ -22,6 +35,7 @@ impl<T:PartialEq+Debug>List<T> {
         }
     }
 
+    /// 向链表末尾添加新节点
     fn push(&mut self, new_node: Link<T>) {
         if  self.head.is_none(){
             self.head = new_node.clone();
@@ -32,6 +46,8 @@ impl<T:PartialEq+Debug>List<T> {
         }
         
     }
+
+    /// 从链表头部移除并返回节点数据
     fn pop(&mut self) -> Option<T> {
         let node = self.head.take();
         if node.is_none() {
@@ -59,7 +75,9 @@ impl<T:PartialEq+Debug>List<T> {
             }
         }
     }
-      // 判断链表是否有环，如果有返回节点
+
+    /// 环检测：使用龟兔赛跑算法检测链表中是否存在环
+    /// 若存在环，返回环中的某个节点；否则返回 None
     fn has_cycle(&self) -> Option<Rc<RefCell<Node<T>>>>{
         let  mut fast = self.head.clone();
         let  mut slow = self.head.clone();
@@ -116,4 +134,5 @@ mod tests {
         println!("{:?}",head.as_ref().unwrap().borrow().elem);
         assert_eq!(head,node2);
     }
+    
 }

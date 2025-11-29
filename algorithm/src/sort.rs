@@ -1,5 +1,13 @@
+// 经典排序算法实现集合
+// 本文件包含 7 种常见排序算法的 Rust 实现
+// 包括：冒泡(O n²)、选择(O n²)、插入(O n²)、归并(O n log n)、
+// 快速排序(O n log n avg)、堆排序(O n log n)、基数排序(O d*n)
+// 所有排序作用于 i32 向量，大多采用原地排序方案
 
-// 冒泡排序
+/// 冒泡排序（Bubble Sort）
+/// 原理：相邻元素比较与交换，每轮将最大元素"冒"到末尾
+/// 时间复杂度：O(n²)，空间复杂度：O(1)，稳定排序
+/// 适用场景：教学、小数据集或几乎有序的数组
 #[allow(dead_code)]
 fn bubble_sort(s: &mut Vec<i32>) {
     if s.len() < 2 {
@@ -14,7 +22,11 @@ fn bubble_sort(s: &mut Vec<i32>) {
         }
     }
 }
-//选择排序 选择最小的
+
+/// 选择排序（Selection Sort）
+/// 原理：每轮从未排序部分选出最小元素，放到已排序末尾
+/// 时间复杂度：O(n²)，空间复杂度：O(1)，不稳定排序
+/// 适用场景：内存限制严格、寻求最少写操作
 #[allow(dead_code)]
 fn select_sort(s: &mut Vec<i32>) {
     if s.len() < 2 {
@@ -33,7 +45,11 @@ fn select_sort(s: &mut Vec<i32>) {
         }
     }
 }
-//插入排序
+
+/// 插入排序（Insertion Sort）
+/// 原理：从第二个元素开始，逐个插入已排序部分的正确位置
+/// 时间复杂度：O(n²)，空间复杂度：O(1)，稳定排序
+/// 适用场景：小数据集、几乎有序的数组，实际性能优于冒泡
 fn insert_sort(s: &mut Vec<i32>) {
     if s.len() < 2 {
         return;
@@ -49,7 +65,10 @@ fn insert_sort(s: &mut Vec<i32>) {
     }
 }
 
-// 归并排序 时间复杂度O（n*logn)
+/// 归并排序（Merge Sort）
+/// 原理：分治法，递归分割数组为左右两部分，然后合并已排序的部分
+/// 时间复杂度：O(n log n)，空间复杂度：O(n)，稳定排序
+/// 适用场景：需要稳定排序、外排序、链表排序
 fn merge_sort(s: &mut Vec<i32>, l: usize, r: usize) {
     if l == r {
         return;
@@ -61,6 +80,8 @@ fn merge_sort(s: &mut Vec<i32>, l: usize, r: usize) {
     merge(s, l, mid, r)
 }
 
+/// 合并辅助函数：将已排序的左右子数组合并到 l..r 范围
+/// 参数：l - 左起点, mid - 中间位置, r - 右结束
 fn merge(s: &mut Vec<i32>, l: usize, mid: usize, r: usize) {
     let mut help = Vec::new();
     let mut p1 = l;
@@ -87,7 +108,10 @@ fn merge(s: &mut Vec<i32>, l: usize, mid: usize, r: usize) {
     }
 }
 
-
+/// 快速排序（Quick Sort）
+/// 原理：分治法，基于一个 pivot 元素对数组进行分区，然后递归排序子数组
+/// 时间复杂度：O(n log n) 平均，O(n²) 最坏，空间复杂度：O(log n)，不稳定排序
+/// 适用场景：平均性能最优，是实际应用最频繁的排序算法之一（被广泛用于库函数）
 fn quick_sort(arr: &mut Vec<i32>){
     let len = arr.len();
     if len >1{
@@ -103,7 +127,8 @@ fn quick_sort_range(arr:&mut Vec<i32>,low:usize,high:usize){
     }
 }
 
-//
+/// 分区辅助函数：选择 pivot 对数组进行三向分区（< = >）
+/// 返回 (左边界, 右边界)，分区使用随机化以避免最坏情况
 fn partition(arr:&mut Vec<i32>,low:usize,high:usize)->(usize,usize){
     use rand::Rng;
     // 随机数增加效率
@@ -134,6 +159,10 @@ fn partition(arr:&mut Vec<i32>,low:usize,high:usize)->(usize,usize){
 
 }
 
+/// 堆排序（Heap Sort）
+/// 原理：利用堆的性质（大顶堆或小顶堆）进行排序，首先建堆，然后逐个移除堆顶
+/// 时间复杂度：O(n log n)，空间复杂度：O(1)，不稳定排序
+/// 适用场景：需要O(1)空间、对最坏情况有保证的场景
 fn heap_sort(arr:&mut Vec<i32>){
     let mut heap_size = arr.len()-1;
     if arr.len()<2{return;}
@@ -152,7 +181,9 @@ fn heap_sort(arr:&mut Vec<i32>){
     // println!("{heap_size}");
 }
 
-//某个数处在i位置，往上继续移动
+/// 堆插入辅助函数
+/// 向大顶堆中插入元素，并通过上浮操作维持堆的性质
+/// 参数：arr-堆数组，i-要插入元素的索引
 fn heap_insert(arr: &mut Vec<i32>,i: usize){
     let mut index = i;
     while arr[index]>arr[((index as isize-1)/2)as usize] {
@@ -161,6 +192,9 @@ fn heap_insert(arr: &mut Vec<i32>,i: usize){
     }
 }
 
+/// 堆化辅助函数（Heapify）
+/// 从索引i开始，通过下沉操作维持大顶堆的性质
+/// 参数：arr-堆数组，i-开始下沉的索引，heap_size-堆的有效大小
 fn heapify(arr: &mut Vec<i32>,i:usize,heap_size:usize){
     let mut left = i*2+1; //左孩子下标
     let mut parent = i; //当前下标
@@ -185,7 +219,10 @@ fn heapify(arr: &mut Vec<i32>,i:usize,heap_size:usize){
 
 }
 
-//基数排序
+/// 基数排序（Radix Sort）
+/// 原理：从最低有效位到最高有效位，依次按数字的每一位进行计数排序
+/// 时间复杂度：O(d*n)（d为最大数的位数），空间复杂度：O(n)，稳定排序
+/// 适用场景：整数排序、非负数、位数固定的场景（不涉及对象比较）
 fn radix(arr: &mut Vec<usize>){
     //计算位数
     let digist = get_radix(arr);
@@ -218,11 +255,17 @@ fn radix(arr: &mut Vec<usize>){
 }
 
 use std::usize;
+
+/// 获取第d位数字辅助函数
+/// 从数字的右侧开始计数，返回第d位的数字（例：123的第2位是2）
+/// 参数：num-待提取数字，d-位置（从1开始）
 fn get_digist(num:usize,d:usize)->usize{
     return num /usize::pow(10,(d-1)as u32)%10
 }
 
-//找出数组中数的最大位数
+/// 获取最大位数辅助函数
+/// 扫描数组找出最大数的位数，作为基数排序的迭代次数
+/// 参数：arr-数组
 fn get_radix(arr: &Vec<usize>)->usize{
     let mut max = 0;
     for i in 0..arr.len(){

@@ -1,7 +1,4 @@
 
-
-
-
 fn main(){
     let mut s = vec![1,3,7,2,5];
     let r= s.len()-1;
