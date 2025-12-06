@@ -99,7 +99,7 @@ impl ParseProto {
                 }
             }
             Token::Float(f) => self.load_const(dst, Value::Float(f)),
-            Token::String(s) => self.load_const(dst, Value::String(s)),
+            Token::String(s) => self.load_const(dst, Value::from(s)),
             Token::Name(name) => self.load_var(dst, name),
             _ => panic!("unexpected token"),
         };
@@ -145,7 +145,7 @@ impl ParseProto {
                 }
             }
             Token::String(s) => {
-                let code = self.load_const(iargs, Value::String(s));
+                let code = self.load_const(iargs, Value::from(s));
                 self.byte_codes.push(code);
             }
             _ => panic!("expected ( or string"),
@@ -164,7 +164,7 @@ impl ParseProto {
         if let Some(i) = self.get_local(&name) {
             ByteCode::Move(dst as u8, i as u8)
         } else {
-            let ic = self.add_const(Value::String(name));
+            let ic = self.add_const(Value::from(name));
             ByteCode::LoadConst(dst as u8, ic as u16)
         }
     }
@@ -176,7 +176,7 @@ impl ParseProto {
             self.load_exp(i);
         } else {
             //先判断全局变量，返回索引
-            let dst = self.add_const(Value::String(var)) as u8;
+            let dst = self.add_const(Value::from(var)) as u8;
             let code = match self.lex.next() {
                 // from const values
                 Token::Nil => ByteCode::SetGlobalConst(dst, self.add_const(Value::Nil) as u8),
@@ -193,7 +193,7 @@ impl ParseProto {
                     ByteCode::SetGlobalConst(dst, self.add_const(Value::Float(f)) as u8)
                 }
                 Token::String(s) => {
-                    ByteCode::SetGlobalConst(dst, self.add_const(Value::String(s)) as u8)
+                    ByteCode::SetGlobalConst(dst, self.add_const(Value::from(s)) as u8)
                 }
                 //from variable
                 Token::Name(var) => {
@@ -202,7 +202,7 @@ impl ParseProto {
                         ByteCode::SetGlobal(dst, i as u8)
                     } else {
                         //global var
-                        ByteCode::SetGlobalGlobal(dst, self.add_const(Value::String(var)) as u8)
+                        ByteCode::SetGlobalGlobal(dst, self.add_const(Value::from(var)) as u8)
                     }
                 }
                 _ => panic!("unexpected token"),
