@@ -12,23 +12,24 @@ use crate::lex::Lex;
 use crate::lex::Token;
 use crate::value::Value;
 use std::fs::File;
+use std::io::Read;
 
 /// Lua 解析原型结构体
 /// - `constants`: 常数池，存储所有字面量常数（整数、浮点、字符串等）
 /// - `byte_codes`: 生成的字节码序列，待虚拟机执行
 /// - `locals`: 局部变量表，记录当前作用域内声明的所有变量名
 /// - `lex`: 词法分析器实例，提供 Token 流
-pub struct ParseProto {
+pub struct ParseProto<R> {
     pub constants: Vec<Value>,
     pub byte_codes: Vec<ByteCode>,
     locals: Vec<String>,
-    lex: Lex,
+    lex: Lex<R>,
 }
 
-impl ParseProto {
+impl<R: Read> ParseProto<R> {
     /// 从文件加载并解析 Lua 源代码，返回包含字节码的 ParseProto
     /// 主入口函数：初始化解析器并调用 chunk() 开始递归解析
-    pub fn load(input: File) -> Self {
+    pub fn load(input: R) -> Self {
         let mut proto = Self {
             constants: Vec::new(),
             byte_codes: Vec::new(),

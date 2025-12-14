@@ -191,6 +191,29 @@ fn heap_insert(arr: &mut Vec<i32>,i: usize){
         index = (index-1)/2
     }
 }
+fn heap_insert_2(arr: &mut Vec<i32>){
+    let len = arr.len();
+    let end = (len - 2) / 2;
+    for i in (0..end).rev(){
+        let mut left = i*2+1; //左孩子下标
+        let mut parent = i; //当前下标
+        while left < len-1{
+            // 比较左右孩子求出最大者下标
+            let mut largest = if left +1 < len&&arr[left]<arr[left+1] {left+1} else {left} ;
+            // 将最大者和父亲节点比较求出最大者下标
+            largest = if arr[parent]<arr[largest]{largest} else{parent};
+            //如果是父亲节点自己就结束
+            if largest == parent{
+                break;
+            }
+            // 反之，交换两者
+            arr.swap(parent,largest);
+            // 当前节点更换
+            parent = largest;
+            left = parent *2 +1;
+        }
+    }
+}
 
 /// 堆化辅助函数（Heapify）
 /// 从索引i开始，通过下沉操作维持大顶堆的性质

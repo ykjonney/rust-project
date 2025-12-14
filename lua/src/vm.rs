@@ -33,7 +33,7 @@ impl ExeState {
     }
 
     /// 执行字节码：遍历 ParseProto 中的字节码序列并逐个执行
-    pub fn execute(&mut self,proto:&ParseProto){
+    pub fn execute<R: std::io::Read>(&mut self,proto:&ParseProto<R>){
         // 简单字节码执行循环实现说明：
         // - 栈（stack）被用作寄存器文件：字节码中的寄存器索引直接对应 stack 的位置
         // - 在访问某个寄存器前，保证 stack 有足够长度（不足则用 Value::Nil 扩展）

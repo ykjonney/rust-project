@@ -90,14 +90,14 @@ pub enum Token {
 /// - `input`: 输入文件流，用于逐字符读取源代码
 /// - `ahead`: 预存的下一个 Token（向前查看机制），用于 `peek()` 和高效的 `next()` 实现
 #[derive(Debug)]
-pub struct Lex {
-    input: File,
+pub struct Lex <R>{
+    input: R,
     ahead: Token,
 }
 
-impl Lex {
+impl<R:Read> Lex<R> {
     /// 创建新的词法分析器实例，以指定的文件为输入源
-    pub fn new(input: File) -> Self {
+    pub fn new(input: R) -> Self {
         Lex {
             input,
             ahead: Token::Eos,

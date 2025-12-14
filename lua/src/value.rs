@@ -3,14 +3,22 @@
 // 字符串采用分层存储以优化空间使用：短字符串直接存储、中等/长字符串用引用计数
 
 use crate::vm::ExeState;
+use std::collections::HashMap;
 use std::rc::Rc;
 use std::fmt;
+use std::cell::RefCell;
+use std::hash::{Hash, Hasher};
 
 /// 短字符串的最大长度（优化：直接在 Value 中存储小字符串）
 const SHORT_STR_MAX: usize = 14; //sizeof(Value) - 1(tag)-1(len)
 /// 中等字符串的最大长度
 const MID_STR_MAX: usize = 48-1;
 
+
+pub struct Table{
+    pub array: Vec<Value>,
+    pub map:HashMap<Value,Value>,
+}
 /// Lua 值类型枚举
 /// 采用分层字符串存储以平衡空间与性能
 #[derive(Clone)]
@@ -32,6 +40,7 @@ pub enum Value {
     MidStr(Rc<(u8, [u8; MID_STR_MAX])>),
     /// 长字符串（引用计数 String）
     LongStr(Rc<String>),
+    Table(Rc<RefCell<Table>>),
 }
 
 impl fmt::Display for Value {
@@ -45,6 +54,7 @@ impl fmt::Display for Value {
             Value::MidStr(s) => write!(f, "{s:?}"),
             Value::LongStr(s) => write!(f, "{s:?}"),
             Value::Function(_) => write!(f, "function"),
+            Value::Table(t) => write!(f, "table {:?}", Rc::as_ptr(t)),
         }
     }
 }
@@ -63,6 +73,46 @@ impl PartialEq for Value {
     }
 }
 
+impl Hash for Value {
+    fn hash<H:Hasher>(&self,state:&mut H){
+        match self {
+            Value::Nil => {
+                0u8.hash(state);
+            },
+            Value::Boolean(b) => {
+                1u8.hash(state);
+                b.hash(state);
+            },
+            Value::Integer(i) => {
+                2u8.hash(state);
+                i.hash(state);
+            },
+            Value::Float(f) => {
+                3u8.hash(state);
+                //将f64转为u64进行hash
+                let bits = f.to_bits();
+                bits.hash(state);
+            },
+            Value::ShortStr(_,s) => {
+                4u8.hash(state);
+                s.hash(state);
+            },
+            Value::Function(f) => {
+                5u8.hash(state);
+                let ptr = *f as usize;
+                ptr.hash(state);
+            },
+            Value::Table(t) => {
+                6u8.hash(state);
+                let ptr = Rc::as_ptr(t) as usize;
+                ptr.hash(state);
+            },
+            _ => {
+                panic!("unhashable value");
+            }
+        }
+    }
+}
 
 impl From<String> for Value {
     fn from(value: String) -> Self {

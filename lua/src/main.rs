@@ -1,5 +1,6 @@
 use std::env;
 use std::fs::File;
+use std::io::BufReader;
 mod lex;
 mod value;
 mod vm;
@@ -16,4 +17,9 @@ fn main() {
 
     let lua_file = &args[1];
     let file = File::open(lua_file).unwrap();
+    let input = BufReader::new(file);
+
+    let proto = parse::ParseProto::load(input);
+    let mut exe_state = vm::ExeState::new();
+    exe_state.execute(&proto);
 }
